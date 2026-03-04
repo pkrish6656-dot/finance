@@ -1,0 +1,108 @@
+Build a modern web application called **AutoFinance**, a personal finance automation platform that helps users automatically track, categorize, and optimize their spending.
+
+The goal is to create the **most powerful yet simple personal finance automation tool**, designed for everyday users who want to understand their money without manually managing spreadsheets.
+
+Core Features:
+
+1. **Automatic Expense Tracking**
+   Users can connect their bank accounts securely or upload CSV bank statements. The system automatically imports transactions and categorizes them using intelligent classification.
+
+2. **Smart Expense Categorization**
+   Transactions should automatically be sorted into categories such as:
+
+* Housing
+* Transportation
+* Groceries
+* Dining
+* Subscriptions
+* Shopping
+* Healthcare
+* Entertainment
+* Utilities
+
+Allow users to edit categories and train the system so it learns from corrections.
+
+3. **Subscription Detection**
+   The system should detect recurring payments (Netflix, Spotify, gym memberships, etc.) and show:
+
+* total monthly subscription spending
+* inactive subscriptions
+* yearly cost projections
+
+4. **Monthly Budget Automation**
+   Users can set monthly budgets for categories. The system automatically monitors spending and shows:
+
+* budget remaining
+* overspending alerts
+* predictive warnings before limits are reached
+
+5. **Financial Insights Dashboard**
+   Create a visually appealing dashboard showing:
+
+* spending breakdown charts
+* monthly trends
+* income vs expenses
+* savings rate
+* largest spending categories
+* net cash flow
+
+Use modern data visualization (charts, graphs, and trend lines).
+
+6. **Financial Health Score**
+   Generate a dynamic financial score based on:
+
+* savings rate
+* debt-to-income ratio
+* discretionary spending
+* budget adherence
+
+Provide personalized recommendations for improving the score.
+
+7. **AI Financial Assistant**
+   Include an AI chatbot that can answer questions such as:
+
+* “Where did most of my money go this month?”
+* “How can I save $500 next month?”
+* “Which subscriptions should I cancel?”
+
+The assistant should analyze the user's financial data to provide personalized advice.
+
+8. **Smart Savings Automation**
+   Allow users to create savings goals such as:
+
+* emergency fund
+* vacation
+* car purchase
+* debt payoff
+
+The system should calculate how much the user needs to save weekly or monthly to reach their goal.
+
+9. **Spending Alerts**
+   Send notifications when:
+
+* unusual spending occurs
+* a large transaction happens
+* a bill increases
+* budgets are exceeded
+
+10. **Privacy & Security**
+    Financial data must be encrypted and stored securely. The platform should emphasize privacy-first architecture and allow local data storage options.
+
+Design Requirements:
+
+* Clean modern UI similar to fintech apps
+* dark mode support
+* mobile responsive design
+* fast loading dashboards
+* intuitive navigation
+
+Technology Suggestions:
+
+Frontend: React / Next.js
+Backend: Node.js or Python
+Database: PostgreSQL
+Charts: Recharts or Chart.js
+
+Goal:
+
+Create a scalable SaaS platform that users would be willing to pay a monthly subscription for because it saves time, increases financial awareness, and automates money management.
