@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, buildUrl } from "@shared/routes";
+import { api } from "@shared/routes";
 import { z } from "zod";
 
 // --- TRANSACTIONS ---
@@ -48,6 +48,28 @@ export function useUploadTransactions() {
       });
       if (!res.ok) throw new Error("Failed to upload CSV");
       return api.transactions.uploadCsv.responses[200].parse(await res.json());
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.transactions.list.path] });
+      queryClient.invalidateQueries({ queryKey: [api.insights.get.path] });
+    },
+  });
+}
+
+
+
+export function useUpdateTransactionCategory() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, category, merchant }: { id: number; category: string; merchant?: string }) => {
+      const res = await fetch(api.transactions.updateCategory.path.replace(":id", String(id)), {
+        method: api.transactions.updateCategory.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category, merchant }),
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to update transaction category");
+      return api.transactions.updateCategory.responses[200].parse(await res.json());
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.transactions.list.path] });

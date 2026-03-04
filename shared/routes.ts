@@ -39,6 +39,17 @@ export const api = {
         400: errorSchemas.validation,
         401: errorSchemas.unauthorized,
       }
+    },
+    updateCategory: {
+      method: 'PATCH' as const,
+      path: '/api/transactions/:id/category' as const,
+      input: z.object({ category: z.string().min(2), merchant: z.string().optional() }),
+      responses: {
+        200: z.custom<typeof transactions.$inferSelect>(),
+        400: errorSchemas.validation,
+        401: errorSchemas.unauthorized,
+        404: errorSchemas.notFound,
+      }
     }
   },
   budgets: {
@@ -104,7 +115,26 @@ export const api = {
           totalExpenses: z.number(),
           totalIncome: z.number(),
           savingsRate: z.number(),
+          netCashFlow: z.number(),
+          monthlyTrend: z.array(z.object({ month: z.string(), income: z.number(), expenses: z.number() })),
+          incomeVsExpenses: z.array(z.object({ name: z.string(), value: z.number() })),
           categoryBreakdown: z.array(z.object({ category: z.string(), amount: z.number() })),
+          largestCategories: z.array(z.object({ category: z.string(), amount: z.number() })),
+          budgetStatus: z.array(z.object({ category: z.string(), limit: z.number(), spent: z.number(), remaining: z.number(), projectedSpend: z.number(), atRisk: z.boolean() })),
+          spendingAlerts: z.array(z.object({ type: z.string(), message: z.string() })),
+          subscriptionSummary: z.object({
+            monthlyTotal: z.number(),
+            yearlyProjection: z.number(),
+            inactiveCount: z.number(),
+            subscriptions: z.array(z.object({ name: z.string(), amount: z.number(), cadenceDays: z.number(), inactive: z.boolean() }))
+          }),
+          scoreFactors: z.object({
+            savingsRate: z.number(),
+            debtToIncome: z.number(),
+            discretionarySpending: z.number(),
+            budgetAdherence: z.number(),
+          }),
+          recommendations: z.array(z.string()),
         }),
         401: errorSchemas.unauthorized,
       }
