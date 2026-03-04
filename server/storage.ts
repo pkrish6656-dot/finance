@@ -16,6 +16,7 @@ export interface IStorage {
   getTransactions(userId: string): Promise<(typeof transactions.$inferSelect)[]>;
   createTransaction(transaction: InsertTransaction): Promise<typeof transactions.$inferSelect>;
   createTransactionsBatch(txs: InsertTransaction[]): Promise<(typeof transactions.$inferSelect)[]>;
+  updateTransactionCategory(userId: string, id: number, category: string): Promise<typeof transactions.$inferSelect | undefined>;
   
   // Budgets
   getBudgets(userId: string): Promise<(typeof budgets.$inferSelect)[]>;
@@ -43,6 +44,15 @@ export class DatabaseStorage implements IStorage {
   async createTransactionsBatch(txs: InsertTransaction[]) {
     if (txs.length === 0) return [];
     return await db.insert(transactions).values(txs).returning();
+  }
+
+  async updateTransactionCategory(userId: string, id: number, category: string) {
+    const [updated] = await db
+      .update(transactions)
+      .set({ category })
+      .where(and(eq(transactions.userId, userId), eq(transactions.id, id)))
+      .returning();
+    return updated;
   }
 
   async getBudgets(userId: string) {

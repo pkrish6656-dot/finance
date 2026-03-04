@@ -1,4 +1,4 @@
-import { useSubscriptions } from "@/hooks/use-finance";
+import { useSubscriptions, useInsights } from "@/hooks/use-finance";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Repeat, Calendar, CheckCircle2 } from "lucide-react";
@@ -6,6 +6,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Subscriptions() {
   const { data: subscriptions = [], isLoading } = useSubscriptions();
+  const { data: insights } = useInsights();
+  const detected = insights?.subscriptionSummary.subscriptions || [];
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
@@ -16,13 +18,19 @@ export default function Subscriptions() {
         </div>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="rounded-2xl"><CardContent className="p-4"><p className="text-sm text-muted-foreground">Monthly subscription spend</p><p className="text-2xl font-bold">${insights?.subscriptionSummary.monthlyTotal.toFixed(2) || "0.00"}</p></CardContent></Card>
+        <Card className="rounded-2xl"><CardContent className="p-4"><p className="text-sm text-muted-foreground">Yearly projection</p><p className="text-2xl font-bold">${insights?.subscriptionSummary.yearlyProjection.toFixed(2) || "0.00"}</p></CardContent></Card>
+        <Card className="rounded-2xl"><CardContent className="p-4"><p className="text-sm text-muted-foreground">Inactive subscriptions</p><p className="text-2xl font-bold">{insights?.subscriptionSummary.inactiveCount || 0}</p></CardContent></Card>
+      </div>
+
       <Card className="rounded-2xl border-border/50 shadow-sm overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="p-8 space-y-4">
               {[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}
             </div>
-          ) : subscriptions.length === 0 ? (
+          ) : (subscriptions.length + detected.length) === 0 ? (
             <div className="p-12 text-center text-muted-foreground flex flex-col items-center">
               <Repeat className="w-12 h-12 mb-4 opacity-20 text-purple-500" />
               <p className="text-lg font-medium text-foreground">No active subscriptions</p>
@@ -40,7 +48,7 @@ export default function Subscriptions() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {subscriptions.map((sub) => (
+                {[...subscriptions, ...detected.map((d, i) => ({ id: 100000 + i, name: d.name, status: d.inactive ? "inactive" : "active", billingCycle: d.cadenceDays > 32 ? "custom" : "monthly", nextBillingDate: null, amount: d.amount }))].map((sub) => (
                   <TableRow key={sub.id} className="hover:bg-muted/30">
                     <TableCell className="font-semibold text-foreground">
                       <div className="flex items-center gap-3">

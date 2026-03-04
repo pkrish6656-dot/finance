@@ -148,6 +148,11 @@ export default function Goals() {
             const target = Number(goal.targetAmount);
             const percent = Math.min(100, Math.round((current / target) * 100));
             const isComplete = percent >= 100;
+            const remaining = Math.max(0, target - current);
+            const targetDate = goal.targetDate ? new Date(goal.targetDate) : null;
+            const monthsLeft = targetDate ? Math.max(1, Math.ceil((+targetDate - +new Date()) / (1000 * 60 * 60 * 24 * 30))) : 12;
+            const monthlyNeeded = remaining / monthsLeft;
+            const weeklyNeeded = monthlyNeeded / 4.33;
 
             return (
               <Card key={goal.id} className={`rounded-3xl border-border/50 shadow-sm transition-all hover:shadow-lg ${isComplete ? 'bg-gradient-to-br from-card to-blue-500/5' : ''}`}>
@@ -180,6 +185,9 @@ export default function Goals() {
                     value={percent} 
                     className={`h-3 rounded-full bg-secondary ${isComplete ? "[&>div]:bg-blue-500" : "[&>div]:bg-primary"}`} 
                   />
+                  {!isComplete && (
+                    <p className="text-xs mt-3 text-muted-foreground">Save <strong>${monthlyNeeded.toFixed(2)}/month</strong> (~${weeklyNeeded.toFixed(2)}/week) to reach this goal.</p>
+                  )}
                   {isComplete && (
                     <p className="text-xs text-blue-500 font-semibold mt-3 flex items-center">
                       Goal accomplished! 🎉
