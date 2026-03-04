@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useBudgets, useCreateBudget } from "@/hooks/use-finance";
+import { useBudgets, useCreateBudget, useTransactions } from "@/hooks/use-finance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Budgets() {
   const { data: budgets = [], isLoading } = useBudgets();
+  const { data: transactions = [] } = useTransactions();
   const createBudget = useCreateBudget();
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
@@ -122,13 +123,14 @@ export default function Budgets() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {budgets.map((budget) => {
-            // Since we don't have realtime spent data mapped in schema for this view easily,
-            // we will simulate a randomized "spent" amount for aesthetic demonstration of the UI
-            // In a real app, backend would return { ...budget, spentAmount: X }
             const amount = Number(budget.amount);
-            const spent = amount * (Math.random() * 0.8 + 0.1); // Mock 10-90% spent
-            const percent = Math.min(100, Math.round((spent / amount) * 100));
-            const isWarning = percent > 85;
+            const monthTx = transactions.filter((tx) => tx.date.slice(0, 7) === budget.month && tx.category === budget.category && Number(tx.amount) < 0);
+            const spent = monthTx.reduce((acc, tx) => acc + Math.abs(Number(tx.amount)), 0);
+            const percent = amount > 0 ? Math.min(100, Math.round((spent / amount) * 100)) : 0;
+            const today = new Date();
+            const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+            const projected = spent * (daysInMonth / Math.max(1, today.getDate()));
+            const isWarning = percent > 85 || projected > amount;
 
             return (
               <Card key={budget.id} className="rounded-2xl border-border/50 shadow-sm hover:shadow-md transition-all">
@@ -150,7 +152,7 @@ export default function Budgets() {
                     className={`h-2.5 bg-secondary ${isWarning ? "[&>div]:bg-destructive" : "[&>div]:bg-primary"}`} 
                   />
                   <p className={`text-xs mt-3 font-medium ${isWarning ? "text-destructive" : "text-muted-foreground"}`}>
-                    {percent}% of monthly limit
+                    {percent}% used · projected ${projected.toFixed(0)}
                   </p>
                 </CardContent>
               </Card>
